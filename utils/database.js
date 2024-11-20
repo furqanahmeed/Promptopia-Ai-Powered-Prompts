@@ -11,6 +11,10 @@ export const connectToDB = async () => {
   }
 
   try {
+    if (!process.env.MONGODB_URI) {
+      throw new Error('MONGODB_URI is not defined in environment variables');
+    }
+
     await mongoose.connect(process.env.MONGODB_URI, {
       dbName: "Share_prompt",
       useNewUrlParser: true,
@@ -18,9 +22,10 @@ export const connectToDB = async () => {
     });
 
     isConnected = true;
-
     console.log("MongoDB connected");
   } catch (error) {
-    console.log(error);
+    console.log("MongoDB connection error:", error);
+    isConnected = false;
+    throw error; // Re-throw the error to be handled by the caller
   }
 };
